@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.shuffle = exports.check = exports.toMilliseconds = exports.randomItem = exports.links = exports.randomNumber = exports.convertToDecimal = exports.convertToRGB = exports.convertToHex = exports.TimeUnit = void 0;
+exports.chunk = exports.shuffle = exports.check = exports.toMilliseconds = exports.randomItem = exports.links = exports.randomNumber = exports.convertToDecimal = exports.convertToRGB = exports.convertToHex = exports.TimeUnit = void 0;
 /**
  * The time units.
  */
@@ -177,5 +177,23 @@ function shuffle(arr) {
     return newArr;
 }
 exports.shuffle = shuffle;
+;
+/**
+ * Turns the given array into groups of the given size.
+ * @param arr The array to chunk.
+ * @param size The size of the chunks.
+ * @returns The chunked array.
+ * @example
+ * chunk(["red", "green", "blue", "yellow", "orange"], 2); // [["red", "green"], ["blue", "yellow"], ["orange"]]
+ */
+function chunk(arr, size) {
+    const newArr = [];
+    for (let i = 0; i < arr.length; i += size) {
+        newArr.push(arr.slice(i, i + size));
+    }
+    ;
+    return newArr;
+}
+exports.chunk = chunk;
 ;
 //# sourceMappingURL=index.js.map

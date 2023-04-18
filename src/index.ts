@@ -175,3 +175,21 @@ export function shuffle(arr: any[]): any[] {
 
     return newArr;
 };
+
+/**
+ * Turns the given array into groups of the given size.
+ * @param arr The array to chunk.
+ * @param size The size of the chunks.
+ * @returns The chunked array.
+ * @example
+ * chunk(["red", "green", "blue", "yellow", "orange"], 2); // [["red", "green"], ["blue", "yellow"], ["orange"]]
+ */
+export function chunk(arr: any[], size: number): any[][] {
+    const newArr = [];
+
+    for (let i = 0; i < arr.length; i += size) {
+        newArr.push(arr.slice(i, i + size));
+    };
+
+    return newArr;
+};

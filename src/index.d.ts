@@ -107,3 +107,12 @@ export declare function check(value: any, ifTrue: any, ifFalse: any): any;
  * shuffle(["red", "green", "blue"]); // ["blue", "red", "green"]
  */
 export declare function shuffle(arr: any[]): any[];
+/**
+ * Turns the given array into groups of the given size.
+ * @param arr The array to chunk.
+ * @param size The size of the chunks.
+ * @returns The chunked array.
+ * @example
+ * chunk(["red", "green", "blue", "yellow", "orange"], 2); // [["red", "green"], ["blue", "yellow"], ["orange"]]
+ */
+export declare function chunk(arr: any[], size: number): any[][];

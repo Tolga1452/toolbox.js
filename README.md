@@ -236,6 +236,27 @@ import { shuffle } from '@tolga1452/toolbox.js';
 shuffle(["red", "green", "blue"]); // ["blue", "red", "green"]
 ```
 
+### `chunk()`
+
+`chunk(arr: any[], size: number): any[][]`
+
+Turns the given array into groups of the given size.
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `arr` | `any[]` | The array to chunk. |
+| `size` | `number` | The size of the chunks. |
+
+**Returns:** `any[][]`
+
+#### Example
+
+```ts
+import { chunk } from '@tolga1452/toolbox.js';
+
+chunk(["red", "green", "blue", "yellow", "orange"], 2); // [["red", "green"], ["blue", "yellow"], ["orange"]]
+```
+
 ## Types
 
 ### `Decimal`
