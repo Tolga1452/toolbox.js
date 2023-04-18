@@ -44,6 +44,8 @@ import { randomNumber } from '@tolga1452/toolbox.js';
 
 - [**`shuffle()`**](#shuffle): Shuffles the given array.
 
+- [**`chunk()`**](#chunk): Turns the given array into groups of the given size.
+
 ### `convertToHex()`
 
 `convertToHex(color: Decimal | RGB): Hexadecimal)`
