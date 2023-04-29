@@ -26,6 +26,8 @@ import { randomNumber } from '@tolga1452/toolbox.js';
 
 ## Functions
 
+[Jump to Types](#types)
+
 - [**`convertToHex()`**](#converttohex): Converts a [decimal](#decimal) or [RGB](#rgb) color code to a [hexadecimal](#hexadecimal) color code.
 
 - [**`convertToRGB()`**](#converttorgb): Converts a [hexadecimal](#hexadecimal) or [decimal](#decimal) color code to an [RGB](#rgb) color code.
@@ -263,37 +265,33 @@ chunk(["red", "green", "blue", "yellow", "orange"], 2); // [["red", "green"], ["
 
 ### `Decimal`
 
+A Decimal color code is a number between 0 and 16777215 (0xFFFFFF).
+
 ```ts
-/**
- * A Decimal color code is a number between 0 and 16777215 (0xFFFFFF).
- */
 export type Decimal = number;
 ```
 
 ### `RGB`
 
+An RGB color code is an array of 3 numbers between 0 and 255.
+
 ```ts
-/**
- * An RGB color code is an array of 3 numbers between 0 and 255.
- */
 export type RGB = [number, number, number];
 ```
 
 ### `Hexadecimal`
 
+A Hexadecimal color code is a string that starts with a '#' and is followed by 6 hexadecimal characters.
+
 ```ts
-/**
- * A Hexadecimal color code is a string that starts with a '#' and is followed by 6 hexadecimal characters.
- */
 export type Hexadecimal = `#${string}`;
 ```
 
 ### `TimeUnit`
 
+The time units.
+
 ```ts
-/**
- * The time units.
- */
 export enum TimeUnit {
     Milliseconds,
     Seconds,
