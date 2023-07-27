@@ -4,6 +4,9 @@
 
 A collection of useful functions for JavaScript & Typescript.
 
+## Support My Work!
+<a target="_blank" href="https://donorbox.org/donate-me-49?default_interval=o&amount=5"><img src="https://donorbox.org/images/png-donate/logo-button-small.png" /></a>
+
 ## Installation
 
 ```bash
