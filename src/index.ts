@@ -193,3 +193,46 @@ export function chunk(arr: any[], size: number): any[][] {
 
     return newArr;
 };
+
+/**
+ * Returns the factorial of the given number.
+ * @param n The number to get the factorial of.
+ * @returns The factorial.
+ */
+export function factorial(n: number): number {
+    let result = 1;
+
+    for (let i = 1; i <= n; i++) {
+        result *= i;
+    };
+
+    return result;
+};
+
+/**
+ * Returns the binomial coefficient of the given numbers.
+ * @param n The first number.
+ * @param k The second number.
+ * @returns The binomial coefficient.
+ */
+export function binomialCoefficient(n: number, k: number): number {
+    return factorial(n) / (factorial(k) * factorial(n - k));
+};
+
+/**
+ * Returns the probability of the binomial distribution.
+ * 
+ * Suppose a biased coin comes up heads with probability 0.3 when tossed. The probability of seeing exactly 4 heads in 6 tosses is `binomialDistributionProbability(4, 6, 0.3)`.
+ * @param successes The number of successes.
+ * @param trials The number of trials.
+ * @param probability The probability of success.
+ * @returns The probability.
+ */
+export function binomialDistributionProbability(successes: number, trials: number, probability: number): number {
+    if (successes < 0) throw new Error('Successes cannot be less than 0.');
+    if (trials < 0) throw new Error('Trials cannot be less than 0.');
+    if (successes > trials) throw new Error('Successes cannot be greater than trials.');
+    if (probability < 0 || probability > 1) throw new Error('Probability must be between 0 and 1. If you want to convert a percentage to a decimal, divide it by 100 and multiply the result by 100.');
+
+    return binomialCoefficient(trials, successes) * (probability ** successes) * ((1 - probability) ** (trials - successes));
+};

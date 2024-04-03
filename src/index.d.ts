@@ -116,3 +116,26 @@ export declare function shuffle(arr: any[]): any[];
  * chunk(["red", "green", "blue", "yellow", "orange"], 2); // [["red", "green"], ["blue", "yellow"], ["orange"]]
  */
 export declare function chunk(arr: any[], size: number): any[][];
+/**
+ * Returns the factorial of the given number.
+ * @param n The number to get the factorial of.
+ * @returns The factorial.
+ */
+export declare function factorial(n: number): number;
+/**
+ * Returns the binomial coefficient of the given numbers.
+ * @param n The first number.
+ * @param k The second number.
+ * @returns The binomial coefficient.
+ */
+export declare function binomialCoefficient(n: number, k: number): number;
+/**
+ * Returns the probability of the binomial distribution.
+ *
+ * Suppose a biased coin comes up heads with probability 0.3 when tossed. The probability of seeing exactly 4 heads in 6 tosses is `binomialDistributionProbability(4, 6, 0.3)`.
+ * @param successes The number of successes.
+ * @param trials The number of trials.
+ * @param probability The probability of success.
+ * @returns The probability.
+ */
+export declare function binomialDistributionProbability(successes: number, trials: number, probability: number): number;

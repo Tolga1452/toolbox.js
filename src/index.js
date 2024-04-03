@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.chunk = exports.shuffle = exports.check = exports.toMilliseconds = exports.randomItem = exports.links = exports.randomNumber = exports.convertToDecimal = exports.convertToRGB = exports.convertToHex = exports.TimeUnit = void 0;
+exports.binomialDistributionProbability = exports.binomialCoefficient = exports.factorial = exports.chunk = exports.shuffle = exports.check = exports.toMilliseconds = exports.randomItem = exports.links = exports.randomNumber = exports.convertToDecimal = exports.convertToRGB = exports.convertToHex = exports.TimeUnit = void 0;
 /**
  * The time units.
  */
@@ -195,5 +195,53 @@ function chunk(arr, size) {
     return newArr;
 }
 exports.chunk = chunk;
+;
+/**
+ * Returns the factorial of the given number.
+ * @param n The number to get the factorial of.
+ * @returns The factorial.
+ */
+function factorial(n) {
+    let result = 1;
+    for (let i = 1; i <= n; i++) {
+        result *= i;
+    }
+    ;
+    return result;
+}
+exports.factorial = factorial;
+;
+/**
+ * Returns the binomial coefficient of the given numbers.
+ * @param n The first number.
+ * @param k The second number.
+ * @returns The binomial coefficient.
+ */
+function binomialCoefficient(n, k) {
+    return factorial(n) / (factorial(k) * factorial(n - k));
+}
+exports.binomialCoefficient = binomialCoefficient;
+;
+/**
+ * Returns the probability of the binomial distribution.
+ *
+ * Suppose a biased coin comes up heads with probability 0.3 when tossed. The probability of seeing exactly 4 heads in 6 tosses is `binomialDistributionProbability(4, 6, 0.3)`.
+ * @param successes The number of successes.
+ * @param trials The number of trials.
+ * @param probability The probability of success.
+ * @returns The probability.
+ */
+function binomialDistributionProbability(successes, trials, probability) {
+    if (successes < 0)
+        throw new Error('Successes cannot be less than 0.');
+    if (trials < 0)
+        throw new Error('Trials cannot be less than 0.');
+    if (successes > trials)
+        throw new Error('Successes cannot be greater than trials.');
+    if (probability < 0 || probability > 1)
+        throw new Error('Probability must be between 0 and 1. If you want to convert a percentage to a decimal, divide it by 100 and multiply the result by 100.');
+    return binomialCoefficient(trials, successes) * (probability ** successes) * ((1 - probability) ** (trials - successes));
+}
+exports.binomialDistributionProbability = binomialDistributionProbability;
 ;
 //# sourceMappingURL=index.js.map
