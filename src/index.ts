@@ -6,12 +6,22 @@ export type Decimal = number;
 /**
  * An RGB color code is an array of 3 numbers between 0 and 255.
  */
-export type RGB = [number, number, number];
+export type Rgb = [number, number, number];
 
 /**
  * A Hexadecimal color code is a string that starts with a '#' and is followed by 6 hexadecimal characters.
  */
 export type Hexadecimal = `#${string}`;
+
+/**
+ * An HSL color code is an array of 3 numbers. The first number is the hue, the second number is the saturation, and the third number is the lightness.
+ */
+export type Hsl = [number, number, number];
+
+/**
+ * A color code can be a Decimal, RGB, Hexadecimal, or HSL color code.
+ */
+export type Color = Decimal | Rgb | Hexadecimal | Hsl;
 
 /**
  * The time units.
@@ -28,50 +38,196 @@ export enum TimeUnit {
 };
 
 /**
- * Converts a decimal or RGB color code to a hexadecimal color code.
- * @param color The color code to convert.
- * @returns The converted color code.
+ * Checks whether the given value is a Decimal color code.
+ * @param value The value to check.
+ * @returns Whether the value is a Decimal color code.
  * @example
- * convertToHex(0x000000); // #000000
- * convertToHex([0, 0, 0]); // #000000
+ * isDecimal(3159888); // true
  */
-export function convertToHex(color: Decimal | RGB): Hexadecimal {
-    if (typeof color === 'number') return `#${color.toString(16).padStart(6, '0')}`;
-    else return `#${color.map((c) => c.toString(16).padStart(2, '0')).join('')}`;
+export function isDecimal(value: any): value is Decimal {
+    return typeof value === 'number' && value >= 0 && value <= 0xFFFFFF;
 };
 
 /**
- * Converts a hexadecimal or decimal color code to an RGB color code.
- * @param color The color code to convert.
- * @returns The converted color code.
+ * Checks whether the given value is an RGB color code.
+ * @param value The value to check.
+ * @returns Whether the value is an RGB color code.
  * @example
- * convertToRGB(0x000000); // [0, 0, 0]
- * convertToRGB('#000000'); // [0, 0, 0]
+ * isRgb([155, 119, 75]); // true
  */
-export function convertToRGB(color: Hexadecimal | Decimal): RGB {
-    if (typeof color === 'number') return [
-        (color & 0xFF0000) >> 16,
-        (color & 0x00FF00) >> 8,
-        color & 0x0000FF
-    ];
-    else return [
-        parseInt(color.slice(1, 3), 16),
-        parseInt(color.slice(3, 5), 16),
-        parseInt(color.slice(5, 7), 16)
-    ];
+export function isRgb(value: any): value is Rgb {
+    return Array.isArray(value) && value.length === 3 && value.every(v => typeof v === 'number' && v >= 0 && v <= 255);
 };
 
 /**
- * Converts a hexadecimal or RGB color code to a decimal color code.
+ * Checks whether the given value is a Hexadecimal color code.
+ * @param value The value to check.
+ * @returns Whether the value is a Hexadecimal color code.
+ * @example
+ * isHex('#9B774B'); // true
+ */
+export function isHex(value: any): value is Hexadecimal {
+    return typeof value === 'string' && /^#?([0-9A-Fa-f]{3}){1,2}$/.test(value);
+};
+
+/**
+ * Checks whether the given value is an HSL color code.
+ * @param value The value to check.
+ * @returns Whether the value is an HSL color code.
+ * @example
+ * isHsl([30, 100, 50]); // true
+ */
+export function isHsl(value: any): value is Hsl {
+    return Array.isArray(value) && value.length === 3 && value.every((v, i) => typeof v === 'number' && (i === 0 ? v >= 0 && v <= 360 : v >= 0 && v <= 100));
+};
+
+/**
+ * Converts the given color code to a Hexadecimal color code.
  * @param color The color code to convert.
+ * @param fromHsl Whether the color code is a HSL color code.
  * @returns The converted color code.
  * @example
- * convertToDecimal([0, 0, 0]); // 0
- * convertToDecimal('#000000'); // 0
+ * convertToHex(4528206); // "#45184e"
+ * convertToHex([69, 24, 78]); // "#45184e"
+ * convertToHex([290, 53, 20], true); // "#45184e"
  */
-export function convertToDecimal(color: Hexadecimal | RGB): Decimal {
-    if (typeof color === 'string') return parseInt(color.slice(1), 16);
-    else return (color[0] << 16) + (color[1] << 8) + color[2];
+export function convertToHex(color: Color, fromHsl: boolean = false): Hexadecimal {
+    if (fromHsl) return convertToHex(convertToRgb(color, true));
+    else {
+        if (isHex(color)) return color;
+        else if (isDecimal(color)) return `#${color.toString(16).padStart(6, '0')}`;
+        else if (isRgb(color)) return `#${color.map(c => c.toString(16).padStart(2, '0')).join('')}`;
+        else throw new Error('Invalid color code.');
+    };
+};
+
+/**
+ * Converts the given color code to an RGB color code.
+ * @param color The color code to convert.
+ * @param fromHsl Whether the color code is a HSL color code.
+ * @returns The converted color code.
+ * @example
+ * convertToRgb(7313317); // [111, 151, 165]
+ * convertToRgb('#6F97A5'); // [111, 151, 165]
+ * convertToRgb([196, 23, 54], true); // [111, 151, 165]
+ */
+export function convertToRgb(color: Color, fromHsl: boolean = false): Rgb {
+    if (fromHsl) {
+        if (!isHsl(color)) throw new Error('Color is not a HSL color code.');
+
+        const h = Math.max(0, Math.min(360, color[0]));
+        const s = Math.max(0, Math.min(100, color[1])) / 100;
+        const l = Math.max(0, Math.min(100, color[2])) / 100;
+
+        if (s === 0) {
+            const gray = Math.round(l * 255);
+
+            return [gray, gray, gray];
+        };
+
+        function hue2rgb(p: number, q: number, t: number) {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1 / 6) return p + (q - p) * 6 * t;
+            if (t < 1 / 2) return q;
+            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+
+            return p;
+        };
+
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        const r = hue2rgb(p, q, h / 360 + 1 / 3);
+        const g = hue2rgb(p, q, h / 360);
+        const b = hue2rgb(p, q, h / 360 - 1 / 3);
+
+        return [
+            Math.round(r * 255),
+            Math.round(g * 255),
+            Math.round(b * 255)
+        ];
+    } else {
+        if (isRgb(color)) return color;
+        else if (isDecimal(color)) return [
+            (color & 0xFF0000) >> 16,
+            (color & 0x00FF00) >> 8,
+            color & 0x0000FF
+        ];
+        else if (isHex(color)) return [
+            parseInt(color.slice(1, 3), 16),
+            parseInt(color.slice(3, 5), 16),
+            parseInt(color.slice(5, 7), 16)
+        ];
+        else throw new Error('Invalid color code.');
+    };
+};
+
+/**
+ * Converts the given color code to a Decimal color code.
+ * @param color The color code to convert.
+ * @param fromHsl Whether the color code is a HSL color code.
+ * @returns The converted color code.
+ * @example
+ * convertToDecimal([227, 84, 117]); // 14898293
+ * convertToDecimal('#e35475'); // 14898293
+ * convertToDecimal([346, 72, 61], true); // 14898293
+ */
+export function convertToDecimal(color: Color, fromHsl: boolean = false): Decimal {
+    if (fromHsl) return convertToDecimal(convertToRgb(color, true));
+    else {
+        if (isDecimal(color)) return color;
+        else if (isHex(color)) return parseInt(color.slice(1), 16);
+        else if (isRgb(color)) return (color[0] << 16) + (color[1] << 8) + color[2];
+        else throw new Error('Invalid color code.');
+    };
+};
+
+/**
+ * Converts the given color code to an HSL color code.
+ * @param color The color code to convert. Do NOT use a HSL color code here.
+ * @returns The converted color code.
+ * @example
+ * convertToHsl(3444029); // [126, 46, 38]
+ * convertToHsl('#348d3d'); // [126, 46, 38]
+ * convertToHsl([52, 141, 61]); // [126, 46, 38]
+ */
+export function convertToHsl(color: Color): Hsl {
+    const [r, g, b] = convertToRgb(color).map(c => c / 255);
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+
+    let h: number;
+    let s: number;
+    let l = (max + min) / 2;
+
+    if (max === min) h = s = 0;
+    else {
+        let d = max - min;
+
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+        switch (max) {
+            case r: {
+                h = (g - b) / d + (g < b ? 6 : 0);
+
+                break;
+            };
+            case g: {
+                h = (b - r) / d + 2;
+
+                break;
+            };
+            case b: {
+                h = (r - g) / d + 4;
+
+                break;
+            };
+        };
+
+        h /= 6;
+    };
+
+    return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
 };
 
 /**
@@ -235,4 +391,96 @@ export function binomialDistributionProbability(successes: number, trials: numbe
     if (probability < 0 || probability > 1) throw new Error('Probability must be between 0 and 1. If you want to convert a percentage to a decimal, divide it by 100 and multiply the result by 100.');
 
     return binomialCoefficient(trials, successes) * (probability ** successes) * ((1 - probability) ** (trials - successes));
+};
+
+/**
+ * Returns the brightness of the given color.
+ * @param color The color to get the brightness of.
+ * @returns The brightness. The value is between 0 and 255.
+ */
+export function colorBrightness(color: Color): number {
+    const [r, g, b] = convertToRgb(color);
+
+    return (r * 299 + g * 587 + b * 114) / 1000;
+};
+
+/**
+ * Checks whether the given color is a light color.
+ * @param color The color to check.
+ * @returns Whether the color is a light color.
+ */
+export function isLightColor(color: Color): boolean {
+    return colorBrightness(color) > 128;
+};
+
+/**
+ * Makes the given HSL color lighter. This function is HSL only. For other color types, use `lightenColor`.
+ * @param color The HSL color to lighten.
+ * @param amount The amount to lighten the color by. The value must be between `0` and `100`. The default value is `30`.
+ * @returns The lightened HSL color.
+ * @example
+ * lightenHslColor([30, 100, 50]); // [30, 100, 80]
+ * lightenHslColor([30, 100, 50], 50); // [30, 100, 100]
+ */
+export function lightenHslColor(color: Hsl, amount: number = 30): Hsl {
+    let [h, s, l] = color;
+
+    l = Math.min(100, l + amount);
+
+    return [h, s, l];
+};
+
+/**
+ * Makes the given HSL color darker. This function is HSL only. For other color types, use `darkenColor`.
+ * @param color The HSL color to darken.
+ * @param amount The amount to darken the color by. The value must be between `0` and `100`. The default value is `30`.
+ * @returns The darkened HSL color.
+ * @example
+ * darkenHslColor([30, 100, 50]); // [30, 100, 20]
+ * darkenHslColor([30, 100, 50], 50); // [30, 100, 0]
+ */
+export function darkenHslColor(color: Hsl, amount: number = 30): Hsl {
+    let [h, s, l] = color;
+
+    l = Math.max(0, l - amount);
+
+    return [h, s, l];
+};
+
+/**
+ * Makes the given color lighter. This function does not support HSL. For HSL colors, use `lightenHslColor`.
+ * @param color The color to lighten.
+ * @param amount The amount to lighten the color by. The value must be between `0` and `100`. The default value is `25`.
+ * @returns The lightened color.
+ * @example
+ * lightenColor(39219); // 1769318
+ * lightenColor('#009933'); // '#1aff66'
+ * lightenColor('#009933', 50); // '#99ffbb'
+ * lightenColor([0, 153, 51]); // [26, 255, 102]
+ */
+export function lightenColor(color: Color, amount: number = 25): typeof color {
+    const ligthened = lightenHslColor(convertToHsl(color), amount);
+
+    if (isDecimal(color)) return convertToDecimal(ligthened, true);
+    else if (isHex(color)) return convertToHex(ligthened, true);
+    else if (isRgb(color)) return convertToRgb(ligthened, true);
+};
+
+/**
+ * Makes the given color darker. This function does not support HSL. For HSL colors, use `darkerHslColor`.
+ * @param color The color to darken.
+ * @param amount The amount to darken the color by. The value must be between `0` and `100`. The default value is `25`.
+ * @returns The darkened color.
+ * @example
+ * darkenColor(6750105); // 58957
+ * darkenColor('#66ff99'); // '#00e64d'
+ * darkenColor('#66ff99', 50); // '#006622'
+ * darkenColor([102, 255, 153]); // [140, 100, 45]
+ */
+export function darkenColor(color: Color, amount: number = 25): typeof color {
+    const ligthened = darkenHslColor(convertToHsl(color), amount);
+
+    if (isDecimal(color)) return convertToDecimal(ligthened, true);
+    else if (isHex(color)) return convertToHex(ligthened, true);
+    else if (isRgb(color)) return convertToRgb(ligthened, true);
 };
