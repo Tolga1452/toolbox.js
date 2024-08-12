@@ -614,12 +614,12 @@ A Decimal color code is a number between 0 and 16777215 (0xFFFFFF).
 export type Decimal = number;
 ```
 
-### `RGB`
+### `Rgb`
 
 An RGB color code is an array of 3 numbers between 0 and 255.
 
 ```ts
-export type RGB = [number, number, number];
+export type Rgb = [number, number, number];
 ```
 
 ### `Hexadecimal`
@@ -628,6 +628,22 @@ A Hexadecimal color code is a string that starts with a '#' and is followed by 6
 
 ```ts
 export type Hexadecimal = `#${string}`;
+```
+
+### `Hsl`
+
+An HSL color code is an array of 3 numbers. The first number is the hue, the second number is the saturation, and the third number is the lightness.
+
+```ts
+export type Hsl = [number, number, number];
+```
+
+### `Color`
+
+A color code can be a Decimal, RGB, or Hexadecimal color code.
+
+```ts
+export type Hsl = Decimal | Rgb | Hexadecimal;
 ```
 
 ### `TimeUnit`
