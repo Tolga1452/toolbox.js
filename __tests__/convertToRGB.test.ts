@@ -1,11 +1,11 @@
-import { convertToRGB } from '../';
+import { convertToRgb } from '../';
 
-describe('convertToRGB', () => {
+describe('convertToRgb', () => {
     it('should convert decimal color code to RGB color code', () => {
-        expect(convertToRGB(16711680)).toEqual([255, 0, 0]);
+        expect(convertToRgb(16711680)).toEqual([255, 0, 0]);
     });
 
     it('should convert hexadecimal color code to RGB color code', () => {
-        expect(convertToRGB('#ff0000')).toEqual([255, 0, 0]);
+        expect(convertToRgb('#ff0000')).toEqual([255, 0, 0]);
     });
 });
