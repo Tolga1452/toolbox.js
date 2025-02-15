@@ -1,9 +1,9 @@
 {
   "name": "@tolga1452/toolbox.js",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A collection of useful functions for JavaScript & Typescript.",
-  "main": "./src",
-  "types": "./src",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
   "scripts": {
     "test": "jest",
     "build": "tsc"
