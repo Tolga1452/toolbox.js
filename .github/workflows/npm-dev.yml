@@ -19,17 +19,32 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
-      - run: npm ci
-      - run: npm test --if-present
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
 
-      - run: npm run build
+      - name: Get pnpm store path
+        shell: bash
+        run: echo "PNPM_STORE=$(pnpm store path)" >> "$GITHUB_ENV"
+
+      - uses: actions/cache@v4
+        with:
+          path: ${{ env.PNPM_STORE }}
+          key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-${{ runner.os }}-
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      - run: pnpm build
 
       - name: Bump prerelease
         run: |
-          SHORT=$(git rev-parse --short $GITHUB_SHA)
-          npm version --no-git-tag-version prepatch --preid "dev.$SHORT"
+          SHORT=$(git rev-parse --short "$GITHUB_SHA")
+          pnpm version --no-git-tag-version prepatch --preid "dev.$SHORT"
 
       - name: Publish to npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish --tag dev --access public
+        run: pnpm publish --tag dev --access public
