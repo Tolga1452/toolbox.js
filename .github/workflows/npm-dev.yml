@@ -3,6 +3,10 @@ name: Publish Dev Build
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   publish-dev:
     runs-on: ubuntu-latest
