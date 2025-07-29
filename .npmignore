@@ -1,1 +1,8 @@
 src
+__tests__
+.github
+scripts
+.gitignore
+eslint.config.js
+jest.*.js
+jest.tsconfig.json
