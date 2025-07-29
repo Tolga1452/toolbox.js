@@ -74,9 +74,32 @@ export interface CMYK {
     k: number;
 };
 
+/**
+ * A type that can represent any color format supported by the library.
+ * This includes Decimal, Hexadecimal, RGB, HSL, and CMYK.
+ */
+export type AnyColor = Decimal | Hexadecimal | RGB | HSL | CMYK;
+
+/**
+ * An enumeration of the color channels in an RGB color, useful for accessing RGB components in a Decimal representation.
+ * 
+ * The values correspond to the indices of the red, green, blue, and alpha components in a packed integer format.
+ */
 export enum RgbByte {
+    /**
+     * An enum value representing the red channel in an RGB color.
+     */
     Red = 0,
+    /**
+     * An enum value representing the green channel in an RGB color.
+     */
     Green = 1,
+    /**
+     * An enum value representing the blue channel in an RGB color.
+     */
     Blue = 2,
+    /**
+     * An enum value representing the alpha channel in an RGB color.
+     */
     Alpha = 3
 };
