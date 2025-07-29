@@ -24,6 +24,17 @@ jobs:
           version: 10
           run_install: false
 
+      - name: Get pnpm store path
+        shell: bash
+        run: echo "PNPM_STORE=$(pnpm store path)" >> "$GITHUB_ENV"
+
+      - uses: actions/cache@v4
+        with:
+          path: ${{ env.PNPM_STORE }}
+          key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-${{ runner.os }}-
+
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
       - run: pnpm build
