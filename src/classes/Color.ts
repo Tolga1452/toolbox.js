@@ -1,4 +1,5 @@
 import { CMYK, Decimal, Hexadecimal, HSL, RGB, RgbByte } from '../types/index.js';
+import { HEX_FORMAT } from '../utils/constants.js';
 import hueToRgb from '../utils/hueToRgb.js';
 import mixComponents from '../utils/mixComponents.js';
 
@@ -96,7 +97,7 @@ export class Color {
      */
     public static fromHex(hex: Hexadecimal): Color {
         if (typeof hex !== 'string') throw new TypeError('`hex` must be a string');
-        if (!/^#(?:[A-Fa-f0-9]{3}|[A-Fa-f0-9]{4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(hex)) throw new SyntaxError('`hex` must be a valid hexadecimal color code (e.g. `#FFFFFF`)');
+        if (!HEX_FORMAT.test(hex)) throw new SyntaxError('`hex` must be a valid hexadecimal color code (e.g. `#FFFFFF`)');
 
         let digits = hex.slice(1);
 
