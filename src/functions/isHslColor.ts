@@ -27,6 +27,7 @@ import { HSL } from '../types/color.js';
  */
 export function isHslColor(value: any): value is HSL {
     return typeof value === 'object' &&
+        value !== null && // i love javascript
         Number.isInteger(value.h) &&
         Number.isInteger(value.s) &&
         Number.isInteger(value.l) &&

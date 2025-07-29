@@ -26,6 +26,7 @@ import { CMYK } from '../types/color.js';
  */
 export function isCmykColor(value: any): value is CMYK {
     return typeof value === 'object' &&
+        value !== null && // i love javascript
         Number.isInteger(value.c) &&
         Number.isInteger(value.m) &&
         Number.isInteger(value.y) &&

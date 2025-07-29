@@ -27,6 +27,7 @@ import { RGB } from '../types/color.js';
  */
 export function isRgbColor(value: any): value is RGB {
     return typeof value === 'object' &&
+        value !== null && // i love javascript
         Number.isInteger(value.r) &&
         Number.isInteger(value.g) &&
         Number.isInteger(value.b) &&
