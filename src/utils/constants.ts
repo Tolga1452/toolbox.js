@@ -2,7 +2,7 @@ import { TimeUnit } from '../types/time.js';
 
 export const HEX_FORMAT = /^#(?:[A-Fa-f0-9]{3}|[A-Fa-f0-9]{4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/;
 
-export const TIME_STRING_FORMAT = /^\s*[+-]?\d+(?:\.\d+)?\s*(?:milliseconds?|msecs?|ms|years?|yrs?|y|weeks?|wks?|w|days?|d|hours?|hrs?|h|minutes?|mins?|min|m|seconds?|secs?|sec|s)(?:\s*(?:,|\band\b)?\s+[+-]?\d+(?:\.\d+)?\s*(?:milliseconds?|msecs?|ms|years?|yrs?|y|weeks?|wks?|w|days?|d|hours?|hrs?|h|minutes?|mins?|min|m|seconds?|secs?|sec|s))*\s*$/i;
+export const TIME_STRING_FORMAT = /^\s*[+-]?\d+(?:\.\d+)?\s*(?:milliseconds?|msecs?|ms|years?|yrs?|y|weeks?|wks?|w|days?|d|hours?|hrs?|h|minutes?|mins?|min|m|seconds?|secs?|sec|s)(?:\s*(?:,|\band\b)?\s+[+-]?\d+(?:\.\d+)?\s+(?:milliseconds?|msecs?|ms|years?|yrs?|y|weeks?|wks?|w|days?|d|hours?|hrs?|h|minutes?|mins?|min|m|seconds?|secs?|sec|s))*\s*$/i;
 
 export const TIME_UNIT_FORMAT = /([+-]?\d+(?:\.\d+)?)\s*(milliseconds?|msecs?|ms|years?|yrs?|y|weeks?|wks?|w|days?|d|hours?|hrs?|h|minutes?|mins?|min|m|seconds?|secs?|sec|s)/gi;
 
