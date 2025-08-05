@@ -1,5 +1,5 @@
 import { TimeJson, TimeUnit } from '../types/time.js';
-import { TIME_UNIT_FORMAT, TIME_UNIT_MAP } from '../utils/constants.js';
+import { TIME_STRING_FORMAT, TIME_UNIT_FORMAT, TIME_UNIT_MAP } from '../utils/constants.js';
 
 /**
  * A utility class for handling time durations with various units and operations.
@@ -162,6 +162,7 @@ export class Time {
      */
     public static parse(time: string): Time {
         if (typeof time !== 'string') throw new TypeError('`time` must be a string');
+        if (!TIME_STRING_FORMAT.test(time)) throw new RangeError(`Invalid time format: ${time}. Expected format is: \`{number} {unit_key} {number} {unit_key} ...\``);
 
         time = time.trim().toLowerCase();
 
