@@ -41,8 +41,10 @@ jobs:
 
       - name: Bump prerelease
         run: |
+          BASE=$(node -p "require('./package.json').version.replace(/-.*/, '')")
           SHORT=$(git rev-parse --short "$GITHUB_SHA")
-          pnpm version --no-git-tag-version prepatch --preid "dev.$SHORT"
+          UNIQUE=$(date +%s)
+          pnpm version --no-git-tag-version "${BASE}-dev.${SHORT}.${UNIQUE}"
 
       - name: Publish to npm
         env:
