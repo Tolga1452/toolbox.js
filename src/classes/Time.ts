@@ -1,4 +1,5 @@
 import { TimeJson, TimeUnit } from '../types/time.js';
+import { TIME_STRING_FORMAT, TIME_UNIT_FORMAT, TIME_UNIT_MAP } from '../utils/constants.js';
 
 /**
  * A utility class for handling time durations with various units and operations.
@@ -12,6 +13,14 @@ import { TimeJson, TimeUnit } from '../types/time.js';
  * const oneSecond = Time.fromMilliseconds(1000);
  * const twoMinutes = Time.fromMinutes(2);
  * const oneHour = Time.fromHours(1);
+ *
+ * @example
+ * // Parse time from string representations
+ * const duration1 = Time.parse("1 hour 30 minutes"); // 1 hours, 30 minutes
+ * const duration2 = Time.parse("2h 15m 30s"); // 2 hours, 15 minutes, 30 seconds
+ * const duration3 = Time.parse("3 days 12 hrs"); // 3 days, 12 hours
+ * const duration4 = Time.parse("4 wks 2 days"); // 4 weeks, 2 days
+ * const duration6 = Time.parse("500 ms"); // 500 milliseconds
  *
  * @example
  * // Convert between units
@@ -128,6 +137,50 @@ export class Time {
         if (weeks < 0) throw new RangeError('`weeks` must be 0 or greater');
 
         return new this(weeks * TimeUnit.Week);
+    };
+
+    /**
+     * Creates a Time instance from a string representation of time.
+     * 
+     * The string should be in the format: `{number} {unit_key} {number} {unit_key} ...`,
+     * where `unit_key` can be one of the following: ms, msec, msecs, second, seconds, sec, s, minute, minutes, min, m, hour, hours, hr, h, day, days, week, weeks, year, years.
+     * 
+     * @param time The time duration as a string.
+     * @returns A new Time instance.
+     * 
+     * @example
+     * Time.parse("1 hour 30 minutes"); // 1 hour 30 minutes
+     * 
+     * @example
+     * Time.parse("2h 15m"); // 2 hours 15 minutes
+     * 
+     * @example
+     * Time.parse("3 days 12 hrs"); // 3 days 12 hours
+     * 
+     * @example
+     * Time.parse("4 wks 2 days"); // 4 weeks 2 days
+     */
+    public static parse(time: string): Time {
+        if (typeof time !== 'string') throw new TypeError('`time` must be a string');
+        if (!TIME_STRING_FORMAT.test(time)) throw new RangeError(`Invalid time format: ${time}. Expected format is: \`{number} {unit_key} {number} {unit_key} ...\``);
+
+        time = time.trim().toLowerCase();
+
+        let ms = 0;
+
+        for (const match of time.matchAll(TIME_UNIT_FORMAT)) {
+            if (!match[1] || !match[2]) throw new RangeError(`Invalid time format: ${time}. Expected format is: \`{number} {unit_key} {number} {unit_key} ...\``);
+
+            const value = parseFloat(match[1]);
+            const key = match[2].toLowerCase();
+            const unit = TIME_UNIT_MAP.get(key);
+
+            if (!unit) throw new RangeError(`Unknown time unit key: ${match[2]}. Allowed keys are: ${Array.from(TIME_UNIT_MAP.keys()).join(', ')}`);
+
+            ms += value * unit;
+        };
+
+        return new this(ms);
     };
 
     /**
