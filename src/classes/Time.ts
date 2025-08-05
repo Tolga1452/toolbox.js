@@ -2,73 +2,154 @@ import { TimeJson, TimeUnit } from '../types/time.js';
 
 /**
  * A utility class for handling time durations with various units and operations.
- * 
+ *
  * The Time class provides a convenient way to work with time durations, offering
  * conversion between different time units, arithmetic operations, and formatting
  * capabilities. All internal calculations are done in milliseconds for precision.
- * 
+ *
  * @example
- * // Create time instances
- * const oneSecond = new Time(1000); // 1000 milliseconds
- * const twoMinutes = new Time(2, TimeUnit.Minute);
- * const oneHour = new Time(1, TimeUnit.Hour);
- * 
+ * // Create time instances using static constructors
+ * const oneSecond = Time.fromMilliseconds(1000);
+ * const twoMinutes = Time.fromMinutes(2);
+ * const oneHour = Time.fromHours(1);
+ *
  * @example
  * // Convert between units
- * const time = new Time(90000); // 90 seconds in milliseconds
+ * const time = Time.fromMilliseconds(90000); // 90 seconds in milliseconds
  * console.log(time.toSeconds()); // 90
  * console.log(time.toMinutes()); // 1.5
  * console.log(time.toHours()); // 0.025
- * 
+ *
  * @example
  * // Perform arithmetic operations
- * const time1 = new Time(1000);
- * const time2 = new Time(500);
+ * const time1 = Time.fromMilliseconds(1000);
+ * const time2 = Time.fromMilliseconds(500);
  * time1.add(time2); // time1 is now 1500ms
  * time1.subtract(300); // time1 is now 1200ms
- * 
+ *
  * @example
  * // String representation and JSON conversion
- * const duration = new Time(3661000); // 1 hour, 1 minute, 1 second
+ * const duration = Time.fromMilliseconds(3661000); // 1 hour, 1 minute, 1 second
  * console.log(duration.toString()); // "1 hour, 1 minute, 1 second"
  * console.log(duration.toJSON()); // { ms: 3661000, seconds: 3661, minutes: 61.02, ... }
- * 
+ *
  * @example
  * // Using valueOf for mathematical operations
- * const time = new Time(1000);
- * const doubled = time.valueOf() * 2; // 2000
- * const sum = time + 500; // Works due to valueOf() implementation. When using TypeScript, you may need to explicitly convert it with the `+` operator or the `valueOf` method.
- * 
+ * const time = Time.fromMilliseconds(1000);
+ * const doubled = time * 2; // 2000
+ * const sum = time + 500; // 1500
+ *
+ * // Note: When using TypeScript, you may need to explicitly convert the Time class to its value with the `+` operator or the `valueOf` method.
+ *
+ * const doubled = +time * 2; // 2000
+ * const sum = time.valueOf() + 500; // 1500
+ *
  * @example
- * // Copy constructor
- * const original = new Time(5000);
- * const copy = new Time(original); // Creates a copy with the same duration
+ * // Copying a Time instance
+ * const original = Time.fromMilliseconds(5000);
+ * const copy = Time.fromMilliseconds(original.valueOf()); // Creates a copy with the same duration
  */
 export class Time {
-    /**
-     * The time duration in milliseconds.
-     */
-    public ms: number;
+    private constructor(private ms: number) { };
 
     /**
-     * Creates a new Time instance.
+     * Creates a Time instance from milliseconds.
      * 
-     * @param time The time duration value.
-     * @param from The unit of the time duration value. Defaults to `TimeUnit.Millisecond`.
+     * @param ms The time duration in milliseconds. Must be a non-negative number.
+     * @returns A new Time instance.
      */
-    constructor(time: number | Time, from: TimeUnit = TimeUnit.Millisecond) {
-        if (typeof time !== 'number' && !(time instanceof Time)) throw new TypeError('`time` must be a number or a Time instance');
+    static fromMilliseconds(ms: number): Time {
+        if (typeof ms !== 'number' || isNaN(ms)) throw new TypeError('`ms` must be a number');
+        if (ms < 0) throw new RangeError('`ms` must be 0 or greater');
 
-        if (time instanceof Time) {
-            this.ms = time.ms;
+        return new this(ms);
+    };
 
-            return;
-        };
+    /**
+     * Creates a Time instance from seconds.
+     * 
+     * @param seconds The time duration in seconds. Must be a non-negative number.
+     * @returns A new Time instance.
+     */
+    static fromSeconds(seconds: number): Time {
+        if (typeof seconds !== 'number' || isNaN(seconds)) throw new TypeError('`seconds` must be a number');
+        if (seconds < 0) throw new RangeError('`seconds` must be 0 or greater');
 
-        if (time < 0) throw new RangeError('`time` must be 0 or greater');
-        if (!Object.values(TimeUnit).includes(from)) throw new TypeError('`from` must be a valid `TimeUnit`');
+        return new this(seconds * TimeUnit.Second);
+    };
 
-        this.ms = from * time;
+    /**
+     * Creates a Time instance from minutes.
+     * 
+     * @param minutes The time duration in minutes. Must be a non-negative number.
+     * @returns A new Time instance.
+     */
+    static fromMinutes(minutes: number): Time {
+        if (typeof minutes !== 'number' || isNaN(minutes)) throw new TypeError('`minutes` must be a number');
+        if (minutes < 0) throw new RangeError('`minutes` must be 0 or greater');
+
+        return new this(minutes * TimeUnit.Minute);
+    };
+
+    /**
+     * Creates a Time instance from hours.
+     * 
+     * @param hours The time duration in hours. Must be a non-negative number.
+     * @returns A new Time instance.
+     */
+    static fromHours(hours: number): Time {
+        if (typeof hours !== 'number' || isNaN(hours)) throw new TypeError('`hours` must be a number');
+        if (hours < 0) throw new RangeError('`hours` must be 0 or greater');
+
+        return new this(hours * TimeUnit.Hour);
+    };
+
+    /**
+     * Creates a Time instance from days.
+     * 
+     * @param days The time duration in days. Must be a non-negative number.
+     * @returns A new Time instance.
+     */
+    static fromDays(days: number): Time {
+        if (typeof days !== 'number' || isNaN(days)) throw new TypeError('`days` must be a number');
+        if (days < 0) throw new RangeError('`days` must be 0 or greater');
+
+        return new this(days * TimeUnit.Day);
+    };
+
+    /**
+     * Creates a Time instance from weeks.
+     * 
+     * @param weeks The time duration in weeks. Must be a non-negative number.
+     * @returns A new Time instance.
+     */
+    static fromWeeks(weeks: number): Time {
+        if (typeof weeks !== 'number' || isNaN(weeks)) throw new TypeError('`weeks` must be a number');
+        if (weeks < 0) throw new RangeError('`weeks` must be 0 or greater');
+
+        return new this(weeks * TimeUnit.Week);
+    };
+
+    /**
+     * Creates a Time instance from years.
+     * 
+     * @param years The time duration in years. Must be a non-negative number.
+     * @returns A new Time instance.
+     */
+    static fromYears(years: number): Time {
+        if (typeof years !== 'number' || isNaN(years)) throw new TypeError('`years` must be a number');
+        if (years < 0) throw new RangeError('`years` must be 0 or greater');
+
+        return new this(years * TimeUnit.Year);
+    };
+
+    /**
+     * Converts the time duration to milliseconds.
+     * 
+     * @returns The time duration in milliseconds.
+     */
+    public toMilliseconds(): number {
+        return this.ms;
     };
 
     /**

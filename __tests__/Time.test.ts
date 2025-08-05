@@ -1,313 +1,283 @@
 import { Time } from '../src/classes';
-import { TimeUnit } from '../src/types';
 
 describe('Time', () => {
-    describe('constructor validation', () => {
-        test('should throw TypeError for non-number time parameter', () => {
-            expect(() => new Time('not a number' as any)).toThrow(TypeError);
-            expect(() => new Time(null as any)).toThrow(TypeError);
-            expect(() => new Time(undefined as any)).toThrow(TypeError);
-            expect(() => new Time({} as any)).toThrow(TypeError);
-            expect(() => new Time([] as any)).toThrow(TypeError);
-            expect(() => new Time(true as any)).toThrow(TypeError);
+    describe('static factory validation', () => {
+        test('should throw TypeError for non-number ms parameter', () => {
+            expect(() => Time.fromMilliseconds('not a number' as any)).toThrow(TypeError);
+            expect(() => Time.fromMilliseconds(null as any)).toThrow(TypeError);
+            expect(() => Time.fromMilliseconds(undefined as any)).toThrow(TypeError);
+            expect(() => Time.fromMilliseconds({} as any)).toThrow(TypeError);
+            expect(() => Time.fromMilliseconds([] as any)).toThrow(TypeError);
+            expect(() => Time.fromMilliseconds(true as any)).toThrow(TypeError);
         });
 
-        test('should accept Time instances as valid input', () => {
-            const originalTime = new Time(5000);
-            expect(() => new Time(originalTime)).not.toThrow();
-            
-            const copiedTime = new Time(originalTime);
-            expect(copiedTime).toBeInstanceOf(Time);
-            expect(copiedTime.ms).toBe(5000);
+        test('should throw RangeError for negative ms values', () => {
+            expect(() => Time.fromMilliseconds(-1)).toThrow(RangeError);
+            expect(() => Time.fromMilliseconds(-0.1)).toThrow(RangeError);
         });
 
-        test('should throw TypeError with correct message for invalid time', () => {
-            expect(() => new Time('invalid' as any)).toThrow('`time` must be a number or a Time instance');
+        test('should throw TypeError for non-number seconds parameter', () => {
+            expect(() => Time.fromSeconds('not a number' as any)).toThrow(TypeError);
         });
-
-        test('should throw RangeError for negative time values', () => {
-            expect(() => new Time(-1)).toThrow(RangeError);
-            expect(() => new Time(-0.1)).toThrow(RangeError);
-            expect(() => new Time(-100, TimeUnit.Second)).toThrow(RangeError);
+        test('should throw RangeError for negative seconds', () => {
+            expect(() => Time.fromSeconds(-1)).toThrow(RangeError);
         });
-
-        test('should throw RangeError with correct message for negative time', () => {
-            expect(() => new Time(-1)).toThrow('`time` must be 0 or greater');
+        test('should throw TypeError for non-number minutes parameter', () => {
+            expect(() => Time.fromMinutes('not a number' as any)).toThrow(TypeError);
         });
-
-        test('should throw TypeError for invalid TimeUnit', () => {
-            expect(() => new Time(5, 'invalid' as any)).toThrow(TypeError);
-            expect(() => new Time(5, 123 as any)).toThrow(TypeError);
-            expect(() => new Time(5, null as any)).toThrow(TypeError);
+        test('should throw RangeError for negative minutes', () => {
+            expect(() => Time.fromMinutes(-1)).toThrow(RangeError);
         });
-
-        test('should throw TypeError with correct message for invalid TimeUnit', () => {
-            expect(() => new Time(5, 'invalid' as any)).toThrow('`from` must be a valid `TimeUnit`');
+        test('should throw TypeError for non-number hours parameter', () => {
+            expect(() => Time.fromHours('not a number' as any)).toThrow(TypeError);
+        });
+        test('should throw RangeError for negative hours', () => {
+            expect(() => Time.fromHours(-1)).toThrow(RangeError);
+        });
+        test('should throw TypeError for non-number days parameter', () => {
+            expect(() => Time.fromDays('not a number' as any)).toThrow(TypeError);
+        });
+        test('should throw RangeError for negative days', () => {
+            expect(() => Time.fromDays(-1)).toThrow(RangeError);
+        });
+        test('should throw TypeError for non-number weeks parameter', () => {
+            expect(() => Time.fromWeeks('not a number' as any)).toThrow(TypeError);
+        });
+        test('should throw RangeError for negative weeks', () => {
+            expect(() => Time.fromWeeks(-1)).toThrow(RangeError);
+        });
+        test('should throw TypeError for non-number years parameter', () => {
+            expect(() => Time.fromYears('not a number' as any)).toThrow(TypeError);
+        });
+        test('should throw RangeError for negative years', () => {
+            expect(() => Time.fromYears(-1)).toThrow(RangeError);
         });
     });
 
     describe('constructor functionality', () => {
-        test('should create Time with default TimeUnit.Millisecond', () => {
-            const time = new Time(1000);
-            expect(time.ms).toBe(1000);
+        test('should create Time from milliseconds', () => {
+            const time = Time.fromMilliseconds(1000);
+            expect(time.toMilliseconds()).toBe(1000);
         });
 
-        test('should create Time with TimeUnit.Millisecond explicitly', () => {
-            const time = new Time(500, TimeUnit.Millisecond);
-            expect(time.ms).toBe(500);
+        test('should create Time from seconds', () => {
+            const time = Time.fromSeconds(5);
+            expect(time.toMilliseconds()).toBe(5000);
         });
 
-        test('should create Time with TimeUnit.Second', () => {
-            const time = new Time(5, TimeUnit.Second);
-            expect(time.ms).toBe(5000);
+        test('should create Time from minutes', () => {
+            const time = Time.fromMinutes(2);
+            expect(time.toMilliseconds()).toBe(120000);
         });
 
-        test('should create Time with TimeUnit.Minute', () => {
-            const time = new Time(2, TimeUnit.Minute);
-            expect(time.ms).toBe(120000);
+        test('should create Time from hours', () => {
+            const time = Time.fromHours(1);
+            expect(time.toMilliseconds()).toBe(3600000);
         });
 
-        test('should create Time with TimeUnit.Hour', () => {
-            const time = new Time(1, TimeUnit.Hour);
-            expect(time.ms).toBe(3600000);
+        test('should create Time from days', () => {
+            const time = Time.fromDays(1);
+            expect(time.toMilliseconds()).toBe(86400000);
         });
 
-        test('should create Time with TimeUnit.Day', () => {
-            const time = new Time(1, TimeUnit.Day);
-            expect(time.ms).toBe(86400000);
+        test('should create Time from weeks', () => {
+            const time = Time.fromWeeks(1);
+            expect(time.toMilliseconds()).toBe(604800000);
         });
 
-        test('should create Time with TimeUnit.Week', () => {
-            const time = new Time(1, TimeUnit.Week);
-            expect(time.ms).toBe(604800000);
-        });
-
-        test('should create Time with TimeUnit.Year', () => {
-            const time = new Time(1, TimeUnit.Year);
-            expect(time.ms).toBe(31557600000);
+        test('should create Time from years', () => {
+            const time = Time.fromYears(1);
+            expect(time.toMilliseconds()).toBe(31557600000);
         });
 
         test('should handle zero time value', () => {
-            const time = new Time(0);
-            expect(time.ms).toBe(0);
+            const time = Time.fromMilliseconds(0);
+            expect(time.toMilliseconds()).toBe(0);
         });
 
         test('should handle floating-point time values', () => {
-            const time = new Time(1.5, TimeUnit.Second);
-            expect(time.ms).toBe(1500);
-        });
-
-        test('should create Time from another Time instance', () => {
-            const originalTime = new Time(5000);
-            const copiedTime = new Time(originalTime);
-            expect(copiedTime.ms).toBe(5000);
-            expect(copiedTime.ms).toBe(originalTime.ms);
-        });
-
-        test('should create Time from another Time instance with different unit (should ignore unit parameter)', () => {
-            const originalTime = new Time(2, TimeUnit.Minute);
-            const copiedTime = new Time(originalTime, TimeUnit.Hour); // Unit should be ignored when copying from Time
-            expect(copiedTime.ms).toBe(120000); // Should be 2 minutes in ms, not 2 hours
-            expect(copiedTime.ms).toBe(originalTime.ms);
-        });
-
-        test('should create independent Time instances when copying', () => {
-            const originalTime = new Time(1000);
-            const copiedTime = new Time(originalTime);
-            
-            // Modify the original
-            originalTime.ms = 2000;
-            
-            // Copied should remain unchanged
-            expect(copiedTime.ms).toBe(1000);
-            expect(originalTime.ms).toBe(2000);
+            const time = Time.fromSeconds(1.5);
+            expect(time.toMilliseconds()).toBe(1500);
         });
     });
 
     describe('conversion methods', () => {
         describe('toSecs', () => {
             test('should convert milliseconds to seconds correctly', () => {
-                const time = new Time(5000);
+                const time = Time.fromMilliseconds(5000);
                 expect(time.toSeconds()).toBe(5);
             });
 
             test('should convert from different units to seconds', () => {
-                const timeFromMinutes = new Time(2, TimeUnit.Minute);
+                const timeFromMinutes = Time.fromMinutes(2);
                 expect(timeFromMinutes.toSeconds()).toBe(120);
 
-                const timeFromHours = new Time(1, TimeUnit.Hour);
+                const timeFromHours = Time.fromHours(1);
                 expect(timeFromHours.toSeconds()).toBe(3600);
             });
 
             test('should handle fractional seconds', () => {
-                const time = new Time(1500);
+                const time = Time.fromMilliseconds(1500);
                 expect(time.toSeconds()).toBe(1.5);
             });
 
             test('should handle zero time', () => {
-                const time = new Time(0);
+                const time = Time.fromMilliseconds(0);
                 expect(time.toSeconds()).toBe(0);
             });
         });
 
         describe('toMins', () => {
             test('should convert milliseconds to minutes correctly', () => {
-                const time = new Time(300000); // 5 minutes in ms
+                const time = Time.fromMilliseconds(300000); // 5 minutes in ms
                 expect(time.toMinutes()).toBe(5);
             });
 
             test('should convert from seconds to minutes', () => {
-                const time = new Time(5, TimeUnit.Second);
+                const time = Time.fromSeconds(5);
                 expect(time.toMinutes()).toBeCloseTo(0.08333333333333333);
             });
 
             test('should convert from hours to minutes', () => {
-                const time = new Time(2, TimeUnit.Hour);
+                const time = Time.fromHours(2);
                 expect(time.toMinutes()).toBe(120);
             });
 
             test('should handle fractional minutes', () => {
-                const time = new Time(90000); // 1.5 minutes in ms
+                const time = Time.fromMilliseconds(90000); // 1.5 minutes in ms
                 expect(time.toMinutes()).toBe(1.5);
             });
         });
 
         describe('toHrs', () => {
             test('should convert milliseconds to hours correctly', () => {
-                const time = new Time(7200000); // 2 hours in ms
+                const time = Time.fromMilliseconds(7200000); // 2 hours in ms
                 expect(time.toHours()).toBe(2);
             });
 
             test('should convert from minutes to hours', () => {
-                const time = new Time(90, TimeUnit.Minute);
+                const time = Time.fromMinutes(90);
                 expect(time.toHours()).toBe(1.5);
             });
 
             test('should convert from days to hours', () => {
-                const time = new Time(2, TimeUnit.Day);
+                const time = Time.fromDays(2);
                 expect(time.toHours()).toBe(48);
             });
 
             test('should handle fractional hours', () => {
-                const time = new Time(30, TimeUnit.Minute);
+                const time = Time.fromMinutes(30);
                 expect(time.toHours()).toBe(0.5);
             });
         });
 
         describe('toDays', () => {
             test('should convert milliseconds to days correctly', () => {
-                const time = new Time(172800000); // 2 days in ms
+                const time = Time.fromMilliseconds(172800000); // 2 days in ms
                 expect(time.toDays()).toBe(2);
             });
 
             test('should convert from hours to days', () => {
-                const time = new Time(48, TimeUnit.Hour);
+                const time = Time.fromHours(48);
                 expect(time.toDays()).toBe(2);
             });
 
             test('should convert from weeks to days', () => {
-                const time = new Time(2, TimeUnit.Week);
+                const time = Time.fromWeeks(2);
                 expect(time.toDays()).toBe(14);
             });
 
             test('should handle fractional days', () => {
-                const time = new Time(12, TimeUnit.Hour);
+                const time = Time.fromHours(12);
                 expect(time.toDays()).toBe(0.5);
             });
         });
 
         describe('toWeeks', () => {
             test('should convert milliseconds to weeks correctly', () => {
-                const time = new Time(1209600000); // 2 weeks in ms
+                const time = Time.fromMilliseconds(1209600000); // 2 weeks in ms
                 expect(time.toWeeks()).toBe(2);
             });
 
             test('should convert from days to weeks', () => {
-                const time = new Time(14, TimeUnit.Day);
+                const time = Time.fromDays(14);
                 expect(time.toWeeks()).toBe(2);
             });
 
             test('should convert from years to weeks', () => {
-                const time = new Time(1, TimeUnit.Year);
+                const time = Time.fromYears(1);
                 expect(time.toWeeks()).toBeCloseTo(52.17857);
             });
 
             test('should handle fractional weeks', () => {
-                const time = new Time(3.5, TimeUnit.Day);
+                const time = Time.fromDays(3.5);
                 expect(time.toWeeks()).toBe(0.5);
             });
         });
 
         describe('toYrs', () => {
             test('should convert milliseconds to years correctly', () => {
-                const time = new Time(63115200000);
+                const time = Time.fromMilliseconds(63115200000);
                 expect(time.toYears()).toBe(2);
             });
 
             test('should convert from days to years', () => {
-                const time = new Time(730, TimeUnit.Day);
+                const time = Time.fromDays(730);
                 expect(time.toYears()).toBeCloseTo(2);
             });
 
             test('should handle fractional years', () => {
-                const time = new Time(182.5, TimeUnit.Day);
+                const time = Time.fromDays(182.5);
                 expect(time.toYears()).toBeCloseTo(0.499658);
             });
         });
     });
 
     describe('property access', () => {
-        test('should allow direct access to ms property', () => {
-            const time = new Time(5000);
-            expect(time.ms).toBe(5000);
-        });
-
-        test('should allow modification of ms property', () => {
-            const time = new Time(5000);
-            time.ms = 10000;
-            expect(time.ms).toBe(10000);
-            expect(time.toSeconds()).toBe(10);
+        test('should allow direct access to ms value via toMilliseconds()', () => {
+            const time = Time.fromMilliseconds(5000);
+            expect(time.toMilliseconds()).toBe(5000);
         });
     });
 
     describe('edge cases', () => {
         test('should handle very large time values', () => {
-            const time = new Time(Number.MAX_SAFE_INTEGER);
-            expect(time.ms).toBe(Number.MAX_SAFE_INTEGER);
+            const time = Time.fromMilliseconds(Number.MAX_SAFE_INTEGER);
+            expect(time.toMilliseconds()).toBe(Number.MAX_SAFE_INTEGER);
             expect(() => time.toSeconds()).not.toThrow();
         });
 
         test('should handle very small fractional values', () => {
-            const time = new Time(0.001);
-            expect(time.ms).toBe(0.001);
+            const time = Time.fromMilliseconds(0.001);
+            expect(time.toMilliseconds()).toBe(0.001);
             expect(time.toSeconds()).toBe(0.000001);
         });
 
         test('should handle precision with floating-point arithmetic', () => {
-            const time = new Time(1.1, TimeUnit.Second);
-            expect(time.ms).toBe(1100);
+            const time = Time.fromSeconds(1.1);
+            expect(time.toMilliseconds()).toBe(1100);
             expect(time.toSeconds()).toBe(1.1);
         });
 
         test('should maintain precision through conversions', () => {
             const originalValue = 2.5;
-            const time = new Time(originalValue, TimeUnit.Hour);
-            const roundTrip = new Time(time.toHours(), TimeUnit.Hour);
-            expect(roundTrip.ms).toBe(time.ms);
+            const time = Time.fromHours(originalValue);
+            const roundTrip = Time.fromHours(time.toHours());
+            expect(roundTrip.toMilliseconds()).toBe(time.toMilliseconds());
         });
     });
 
     describe('integration tests', () => {
         test('should work with chained conversions', () => {
-            const time = new Time(1, TimeUnit.Hour);
+            const time = Time.fromHours(1);
             const minutes = time.toMinutes();
-            const seconds = new Time(minutes, TimeUnit.Minute).toSeconds();
+            const seconds = Time.fromMinutes(minutes).toSeconds();
             expect(seconds).toBe(3600);
         });
 
         test('should maintain consistency across different units', () => {
             const milliseconds = 3661000; // 1 hour, 1 minute, 1 second
-            const time = new Time(milliseconds);
+            const time = Time.fromMilliseconds(milliseconds);
             
             expect(time.toSeconds()).toBe(3661);
             expect(time.toMinutes()).toBeCloseTo(61.01666666666667);
@@ -316,20 +286,20 @@ describe('Time', () => {
 
         test('should handle example from documentation', () => {
             // Long Usage example
-            const time = new Time(5, TimeUnit.Second);
-            expect(time.ms).toBe(5000);
+            const time = Time.fromSeconds(5);
+            expect(time.toMilliseconds()).toBe(5000);
             expect(time.toMinutes()).toBeCloseTo(0.08333333333333333);
 
             // Short Usage examples
-            expect(new Time(5, TimeUnit.Minute).toSeconds()).toBe(300);
-            expect(new Time(10000).toSeconds()).toBe(10);
+            expect(Time.fromMinutes(5).toSeconds()).toBe(300);
+            expect(Time.fromMilliseconds(10000).toSeconds()).toBe(10);
         });
     });
 
     describe('boundary value testing', () => {
         test('should handle minimum valid value', () => {
-            const time = new Time(0);
-            expect(time.ms).toBe(0);
+            const time = Time.fromMilliseconds(0);
+            expect(time.toMilliseconds()).toBe(0);
             expect(time.toSeconds()).toBe(0);
             expect(time.toMinutes()).toBe(0);
             expect(time.toHours()).toBe(0);
@@ -339,35 +309,24 @@ describe('Time', () => {
         });
 
         test('should handle very small positive values', () => {
-            const time = new Time(1);
-            expect(time.ms).toBe(1);
+            const time = Time.fromMilliseconds(1);
+            expect(time.toMilliseconds()).toBe(1);
             expect(time.toSeconds()).toBe(0.001);
         });
 
         test('should handle exact unit conversions', () => {
-            expect(new Time(1, TimeUnit.Second).ms).toBe(1000);
-            expect(new Time(1, TimeUnit.Minute).ms).toBe(60000);
-            expect(new Time(1, TimeUnit.Hour).ms).toBe(3600000);
-            expect(new Time(1, TimeUnit.Day).ms).toBe(86400000);
-            expect(new Time(1, TimeUnit.Week).ms).toBe(604800000);
-            expect(new Time(1, TimeUnit.Year).ms).toBe(31557600000);
+            expect(Time.fromSeconds(1).toMilliseconds()).toBe(1000);
+            expect(Time.fromMinutes(1).toMilliseconds()).toBe(60000);
+            expect(Time.fromHours(1).toMilliseconds()).toBe(3600000);
+            expect(Time.fromDays(1).toMilliseconds()).toBe(86400000);
+            expect(Time.fromWeeks(1).toMilliseconds()).toBe(604800000);
+            expect(Time.fromYears(1).toMilliseconds()).toBe(31557600000);
         });
     });
 
     describe('type safety and immutability', () => {
-        test('should not modify constructor parameters', () => {
-            const originalTime = 5;
-            const originalUnit = TimeUnit.Second;
-            
-            new Time(originalTime, originalUnit);
-            
-            // Values should remain unchanged
-            expect(originalTime).toBe(5);
-            expect(originalUnit).toBe(TimeUnit.Second);
-        });
-
         test('should return new numbers from conversion methods', () => {
-            const time = new Time(5000);
+            const time = Time.fromMilliseconds(5000);
             const seconds1 = time.toSeconds();
             const seconds2 = time.toSeconds();
             
@@ -376,41 +335,41 @@ describe('Time', () => {
         });
 
         test('should work with const instances', () => {
-            const time = new Time(1000);
+            const time = Time.fromMilliseconds(1000);
             expect(time.toSeconds()).toBe(1);
-            expect(time.ms).toBe(1000);
+            expect(time.toMilliseconds()).toBe(1000);
         });
     });
 
     describe('valueOf method', () => {
         test('should return the milliseconds value', () => {
-            const time = new Time(5000);
+            const time = Time.fromMilliseconds(5000);
             expect(time.valueOf()).toBe(5000);
         });
 
-        test('should return the same as ms property', () => {
-            const time = new Time(2500);
-            expect(time.valueOf()).toBe(time.ms);
+        test('should return the same as toMilliseconds()', () => {
+            const time = Time.fromMilliseconds(2500);
+            expect(time.valueOf()).toBe(time.toMilliseconds());
         });
 
         test('should work with different time units', () => {
-            const time = new Time(5, TimeUnit.Second);
+            const time = Time.fromSeconds(5);
             expect(time.valueOf()).toBe(5000);
         });
 
         test('should handle zero values', () => {
-            const time = new Time(0);
+            const time = Time.fromMilliseconds(0);
             expect(time.valueOf()).toBe(0);
         });
 
         test('should handle fractional values', () => {
-            const time = new Time(1500.5);
+            const time = Time.fromMilliseconds(1500.5);
             expect(time.valueOf()).toBe(1500.5);
         });
 
         test('should enable numeric operations', () => {
-            const time1 = new Time(1000);
-            const time2 = new Time(2000);
+            const time1 = Time.fromMilliseconds(1000);
+            const time2 = Time.fromMilliseconds(2000);
             expect(+time1 + +time2).toBe(3000);
             expect(+time2 - +time1).toBe(1000);
         });
@@ -418,74 +377,74 @@ describe('Time', () => {
 
     describe('toString method', () => {
         test('should return formatted string for seconds', () => {
-            const time = new Time(5000);
+            const time = Time.fromMilliseconds(5000);
             expect(time.toString()).toBe('5 seconds');
         });
 
         test('should handle zero values', () => {
-            const time = new Time(0);
+            const time = Time.fromMilliseconds(0);
             expect(time.toString()).toBe('');
         });
 
         test('should handle single units with proper pluralization', () => {
-            const oneSecond = new Time(1000);
+            const oneSecond = Time.fromMilliseconds(1000);
             expect(oneSecond.toString()).toBe('1 second');
             
-            const twoSeconds = new Time(2000);
+            const twoSeconds = Time.fromMilliseconds(2000);
             expect(twoSeconds.toString()).toBe('2 seconds');
             
-            const oneMinute = new Time(60000);
+            const oneMinute = Time.fromMilliseconds(60000);
             expect(oneMinute.toString()).toBe('1 minute');
             
-            const twoMinutes = new Time(120000);
+            const twoMinutes = Time.fromMilliseconds(120000);
             expect(twoMinutes.toString()).toBe('2 minutes');
         });
 
         test('should handle multiple time units', () => {
-            const time = new Time(70000); // 1 minute, 10 seconds
+            const time = Time.fromMilliseconds(70000); // 1 minute, 10 seconds
             expect(time.toString()).toBe('1 minute, 10 seconds');
         });
 
         test('should handle complex time combinations', () => {
-            const time = new Time(90061000); // 1 day, 1 hour, 1 minute, 1 second
+            const time = Time.fromMilliseconds(90061000); // 1 day, 1 hour, 1 minute, 1 second
             expect(time.toString()).toBe('1 day, 1 hour, 1 minute, 1 second');
         });
 
         test('should handle fractional milliseconds', () => {
-            const time = new Time(1500.5);
+            const time = Time.fromMilliseconds(1500.5);
             expect(time.toString()).toBe('1 second, 500.5 milliseconds');
         });
 
-        test('should work with different time units in constructor', () => {
-            const time = new Time(5, TimeUnit.Second);
+        test('should work with different time units in static methods', () => {
+            const time = Time.fromSeconds(5);
             expect(time.toString()).toBe('5 seconds');
         });
 
         test('should handle only milliseconds', () => {
-            const time = new Time(500);
+            const time = Time.fromMilliseconds(500);
             expect(time.toString()).toBe('500 milliseconds');
         });
 
         test('should handle years, weeks, and days', () => {
-            const time = new Time(1, TimeUnit.Year);
+            const time = Time.fromYears(1);
             const result = time.toString();
             expect(result).toContain('1 year');
         });
 
         test('should handle single millisecond', () => {
-            const time = new Time(1);
+            const time = Time.fromMilliseconds(1);
             expect(time.toString()).toBe('1 millisecond');
         });
 
         test('should handle multiple milliseconds', () => {
-            const time = new Time(500);
+            const time = Time.fromMilliseconds(500);
             expect(time.toString()).toBe('500 milliseconds');
         });
     });
 
     describe('toJSON method', () => {
         test('should return complete JSON representation', () => {
-            const time = new Time(60, TimeUnit.Second);
+            const time = Time.fromSeconds(60);
             const json = time.toJSON();
 
             expect(json).toEqual({
@@ -500,7 +459,7 @@ describe('Time', () => {
         });
 
         test('should include all time unit conversions', () => {
-            const time = new Time(3600000); // 1 hour
+            const time = Time.fromMilliseconds(3600000); // 1 hour
             const json = time.toJSON();
 
             expect(json).toHaveProperty('ms');
@@ -513,7 +472,7 @@ describe('Time', () => {
         });
 
         test('should have correct values for 1 hour', () => {
-            const time = new Time(1, TimeUnit.Hour);
+            const time = Time.fromHours(1);
             const json = time.toJSON();
 
             expect(json.ms).toBe(3600000);
@@ -526,7 +485,7 @@ describe('Time', () => {
         });
 
         test('should handle zero values', () => {
-            const time = new Time(0);
+            const time = Time.fromMilliseconds(0);
             const json = time.toJSON();
 
             expect(json.ms).toBe(0);
@@ -539,7 +498,7 @@ describe('Time', () => {
         });
 
         test('should be serializable to JSON string', () => {
-            const time = new Time(5, TimeUnit.Minute);
+            const time = Time.fromMinutes(5);
             const json = time.toJSON();
             
             expect(() => JSON.stringify(json)).not.toThrow();
@@ -551,7 +510,7 @@ describe('Time', () => {
         });
 
         test('should maintain precision in JSON', () => {
-            const time = new Time(1500.75);
+            const time = Time.fromMilliseconds(1500.75);
             const json = time.toJSON();
 
             expect(json.ms).toBe(1500.75);
@@ -559,7 +518,7 @@ describe('Time', () => {
         });
 
         test('should work with JSON.stringify directly on Time instance', () => {
-            const time = new Time(30, TimeUnit.Second);
+            const time = Time.fromSeconds(30);
             
             expect(() => JSON.stringify(time)).not.toThrow();
             
