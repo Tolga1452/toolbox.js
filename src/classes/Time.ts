@@ -58,7 +58,7 @@ export class Time {
      * @param ms The time duration in milliseconds. Must be a non-negative number.
      * @returns A new Time instance.
      */
-    static fromMilliseconds(ms: number): Time {
+    public static fromMilliseconds(ms: number): Time {
         if (typeof ms !== 'number' || isNaN(ms)) throw new TypeError('`ms` must be a number');
         if (ms < 0) throw new RangeError('`ms` must be 0 or greater');
 
@@ -71,7 +71,7 @@ export class Time {
      * @param seconds The time duration in seconds. Must be a non-negative number.
      * @returns A new Time instance.
      */
-    static fromSeconds(seconds: number): Time {
+    public static fromSeconds(seconds: number): Time {
         if (typeof seconds !== 'number' || isNaN(seconds)) throw new TypeError('`seconds` must be a number');
         if (seconds < 0) throw new RangeError('`seconds` must be 0 or greater');
 
@@ -84,7 +84,7 @@ export class Time {
      * @param minutes The time duration in minutes. Must be a non-negative number.
      * @returns A new Time instance.
      */
-    static fromMinutes(minutes: number): Time {
+    public static fromMinutes(minutes: number): Time {
         if (typeof minutes !== 'number' || isNaN(minutes)) throw new TypeError('`minutes` must be a number');
         if (minutes < 0) throw new RangeError('`minutes` must be 0 or greater');
 
@@ -97,7 +97,7 @@ export class Time {
      * @param hours The time duration in hours. Must be a non-negative number.
      * @returns A new Time instance.
      */
-    static fromHours(hours: number): Time {
+    public static fromHours(hours: number): Time {
         if (typeof hours !== 'number' || isNaN(hours)) throw new TypeError('`hours` must be a number');
         if (hours < 0) throw new RangeError('`hours` must be 0 or greater');
 
@@ -110,7 +110,7 @@ export class Time {
      * @param days The time duration in days. Must be a non-negative number.
      * @returns A new Time instance.
      */
-    static fromDays(days: number): Time {
+    public static fromDays(days: number): Time {
         if (typeof days !== 'number' || isNaN(days)) throw new TypeError('`days` must be a number');
         if (days < 0) throw new RangeError('`days` must be 0 or greater');
 
@@ -123,7 +123,7 @@ export class Time {
      * @param weeks The time duration in weeks. Must be a non-negative number.
      * @returns A new Time instance.
      */
-    static fromWeeks(weeks: number): Time {
+    public static fromWeeks(weeks: number): Time {
         if (typeof weeks !== 'number' || isNaN(weeks)) throw new TypeError('`weeks` must be a number');
         if (weeks < 0) throw new RangeError('`weeks` must be 0 or greater');
 
@@ -136,7 +136,7 @@ export class Time {
      * @param years The time duration in years. Must be a non-negative number.
      * @returns A new Time instance.
      */
-    static fromYears(years: number): Time {
+    public static fromYears(years: number): Time {
         if (typeof years !== 'number' || isNaN(years)) throw new TypeError('`years` must be a number');
         if (years < 0) throw new RangeError('`years` must be 0 or greater');
 
