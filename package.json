@@ -19,7 +19,8 @@
     "exports": "node scripts/exports.js",
     "build:lib": "tsc",
     "build:types": "tsc --project types.tsconfig.json",
-    "build": "pnpm exports && pnpm build:lib && pnpm build:types"
+    "build": "pnpm exports && pnpm build:lib && pnpm build:types",
+    "prepare": "pnpm exports && pnpm check"
   },
   "keywords": [
     "javascript",
