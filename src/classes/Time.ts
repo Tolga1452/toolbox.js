@@ -140,6 +140,19 @@ export class Time {
     };
 
     /**
+     * Creates a Time instance from years.
+     * 
+     * @param years The time duration in years. Must be a non-negative number.
+     * @returns A new Time instance.
+     */
+    public static fromYears(years: number): Time {
+        if (typeof years !== 'number' || isNaN(years)) throw new TypeError('`years` must be a number');
+        if (years < 0) throw new RangeError('`years` must be 0 or greater');
+
+        return new this(years * TimeUnit.Year);
+    };
+
+    /**
      * Creates a Time instance from a string representation of time.
      * 
      * The string should be in the format: `{number} {unit_key} {number} {unit_key} ...`,
@@ -181,19 +194,6 @@ export class Time {
         };
 
         return new this(ms);
-    };
-
-    /**
-     * Creates a Time instance from years.
-     * 
-     * @param years The time duration in years. Must be a non-negative number.
-     * @returns A new Time instance.
-     */
-    public static fromYears(years: number): Time {
-        if (typeof years !== 'number' || isNaN(years)) throw new TypeError('`years` must be a number');
-        if (years < 0) throw new RangeError('`years` must be 0 or greater');
-
-        return new this(years * TimeUnit.Year);
     };
 
     /**
