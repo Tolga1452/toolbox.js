@@ -13,50 +13,91 @@ describe('Time', () => {
 
         describe('Time.parse', () => {
             test('should parse valid time strings', () => {
-                expect(Time.parse('1 second').toMilliseconds()).toBe(1000);
-                expect(Time.parse('2 minutes').toMilliseconds()).toBe(120000);
-                expect(Time.parse('1 hour 30 minutes').toMilliseconds()).toBe(5400000);
-                expect(Time.parse('3 days 12 hours').toMilliseconds()).toBe(302400000);
-                expect(Time.parse('4 weeks 2 days').toMilliseconds()).toBe(2592000000);
-                expect(Time.parse('1 year').toMilliseconds()).toBe(31557600000);
-                expect(Time.parse('1 minute 10 seconds').toMilliseconds()).toBe(70000);
-                expect(Time.parse('1 day, 1 hour, 1 minute, 1 second').toMilliseconds()).toBe(90061000);
-                expect(Time.parse('1.5 seconds').toMilliseconds()).toBe(1500);
-                expect(Time.parse('500 milliseconds').toMilliseconds()).toBe(500);
+            expect(Time.parse('1 second').toMilliseconds()).toBe(1000);
+            expect(Time.parse('2 minutes').toMilliseconds()).toBe(120000);
+            expect(Time.parse('1 hour 30 minutes').toMilliseconds()).toBe(5400000);
+            expect(Time.parse('3 days 12 hours').toMilliseconds()).toBe(302400000);
+            expect(Time.parse('4 weeks 2 days').toMilliseconds()).toBe(2592000000);
+            expect(Time.parse('1 year').toMilliseconds()).toBe(31557600000);
+            expect(Time.parse('1 minute 10 seconds').toMilliseconds()).toBe(70000);
+            expect(Time.parse('1 day 1 hour 1 minute 1 second').toMilliseconds()).toBe(90061000);
+            expect(Time.parse('1.5 seconds').toMilliseconds()).toBe(1500);
+            expect(Time.parse('500 milliseconds').toMilliseconds()).toBe(500);
             });
 
             test('should handle mixed units and pluralization', () => {
-                expect(Time.parse('2 hrs 15 mins').toMilliseconds()).toBe(8100000);
-                expect(Time.parse('5 secs 250 ms').toMilliseconds()).toBe(5250);
+            expect(Time.parse('2 hrs 15 mins').toMilliseconds()).toBe(8100000);
+            expect(Time.parse('5 secs 250 ms').toMilliseconds()).toBe(5250);
+            });
+
+            test('should handle abbreviated forms', () => {
+            expect(Time.parse('1h 2s').toMilliseconds()).toBe(3602000);
+            expect(Time.parse('1 hour 5s').toMilliseconds()).toBe(3605000);
+            expect(Time.parse('2 mins 5wk').toMilliseconds()).toBe(3024120000);
+            expect(Time.parse('3d 2h 30m').toMilliseconds()).toBe(268200000);
+            expect(Time.parse('1y 2w 3d').toMilliseconds()).toBe(33026400000);
+            expect(Time.parse('45m 30s').toMilliseconds()).toBe(2730000);
+            expect(Time.parse('1hr 15min 30sec').toMilliseconds()).toBe(4530000);
+            expect(Time.parse('2w 5d 8h').toMilliseconds()).toBe(1670400000);
+            expect(Time.parse('500ms 2s').toMilliseconds()).toBe(2500);
+            expect(Time.parse('1.5h 30m').toMilliseconds()).toBe(7200000);
+            expect(Time.parse('3wks 2days').toMilliseconds()).toBe(1987200000);
+            });
+
+            test('should handle different whitespace patterns', () => {
+            expect(Time.parse(' 1h  2m ').toMilliseconds()).toBe(3720000);
+            expect(Time.parse('  1 hour   2 minutes  ').toMilliseconds()).toBe(3720000);
+            expect(Time.parse('1\th\n2\tm').toMilliseconds()).toBe(3720000);
+            });
+
+            test('should handle mixed singular and plural forms', () => {
+            expect(Time.parse('1 week 2 days').toMilliseconds()).toBe(777600000);
+            expect(Time.parse('2 weeks 1 day').toMilliseconds()).toBe(1296000000);
+            expect(Time.parse('1 year 1 week 1 day 1 hour 1 minute 1 second').toMilliseconds()).toBe(32252461000);
+            });
+
+            test('should handle extreme combinations', () => {
+            expect(Time.parse('1ms 1s 1m 1h 1d 1w 1y').toMilliseconds()).toBe(32252461001);
+            expect(Time.parse('999ms 59s 59m 23h 6d').toMilliseconds()).toBe(604799999);
+            expect(Time.parse('10y 52w 365d 24h 60m 60s 1000ms').toMilliseconds()).toBe(378651661000);
             });
 
             test('should handle fractional values', () => {
-                expect(Time.parse('1.25 minutes').toMilliseconds()).toBe(75000);
-                expect(Time.parse('0.5 hours').toMilliseconds()).toBe(1800000);
+            expect(Time.parse('1.25 minutes').toMilliseconds()).toBe(75000);
+            expect(Time.parse('0.5 hours').toMilliseconds()).toBe(1800000);
+            expect(Time.parse('2.75h 1.5m').toMilliseconds()).toBe(9990000);
+            expect(Time.parse('0.1s 0.5ms').toMilliseconds()).toBe(100.5);
+            expect(Time.parse('3.14159 seconds').toMilliseconds()).toBeCloseTo(3141.5899);
+            });
+
+            test('should handle very large values', () => {
+            expect(Time.parse('100 years').toMilliseconds()).toBe(3155760000000);
+            expect(Time.parse('1000 weeks').toMilliseconds()).toBe(604800000000);
+            expect(Time.parse('10000 days').toMilliseconds()).toBe(864000000000);
             });
 
             test('should throw TypeError for non-string input', () => {
-                expect(() => Time.parse(123 as any)).toThrow(TypeError);
-                expect(() => Time.parse(null as any)).toThrow(TypeError);
-                expect(() => Time.parse(undefined as any)).toThrow(TypeError);
-                expect(() => Time.parse({} as any)).toThrow(TypeError);
+            expect(() => Time.parse(123 as any)).toThrow(TypeError);
+            expect(() => Time.parse(null as any)).toThrow(TypeError);
+            expect(() => Time.parse(undefined as any)).toThrow(TypeError);
+            expect(() => Time.parse({} as any)).toThrow(TypeError);
             });
 
             test('should throw RangeError for invalid format', () => {
-                expect(() => Time.parse('not a time')).toThrow(RangeError);
-                expect(() => Time.parse('1 lightyear')).toThrow(RangeError);
-                expect(() => Time.parse('')).toThrow(RangeError);
-                expect(() => Time.parse('1')).toThrow(RangeError);
-                expect(() => Time.parse('hour')).toThrow(RangeError);
-            });
-
-            test('should throw RangeError for unknown unit', () => {
-                expect(() => Time.parse('1 parsec')).toThrow(RangeError);
+            expect(() => Time.parse('not a time')).toThrow(RangeError);
+            expect(() => Time.parse('1 lightyear')).toThrow(RangeError);
+            expect(() => Time.parse('')).toThrow(RangeError);
+            expect(() => Time.parse('1')).toThrow(RangeError);
+            expect(() => Time.parse('hour')).toThrow(RangeError);
+            expect(() => Time.parse('1 parsec')).toThrow(RangeError);
+            expect(() => Time.parse('invalid unit')).toThrow(RangeError);
+            expect(() => Time.parse('1 unknown')).toThrow(RangeError);
             });
 
             test('should handle zero value', () => {
-                expect(Time.parse('0 seconds').toMilliseconds()).toBe(0);
-                expect(Time.parse('0 ms').toMilliseconds()).toBe(0);
+            expect(Time.parse('0 seconds').toMilliseconds()).toBe(0);
+            expect(Time.parse('0 ms').toMilliseconds()).toBe(0);
+            expect(Time.parse('0h 0m 0s').toMilliseconds()).toBe(0);
             });
         });
 

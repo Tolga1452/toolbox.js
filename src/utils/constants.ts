@@ -2,9 +2,11 @@ import { TimeUnit } from '../types/time.js';
 
 export const HEX_FORMAT = /^#(?:[A-Fa-f0-9]{3}|[A-Fa-f0-9]{4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/;
 
-export const TIME_STRING_FORMAT = /^\s*[+-]?\d+(?:\.\d+)?\s*(?:milliseconds?|millisecond|msecs?|msec|ms|years?|year|yrs?|yr|y|weeks?|week|wks?|wk|w|days?|day|d|hours?|hour|hrs?|hr|h|minutes?|minute|mins?|min|m|seconds?|second|secs?|sec|s)(?:\s*(?:,|\band\b)?\s+[+-]?\d+(?:\.\d+)?\s+(?:milliseconds?|millisecond|msecs?|msec|ms|years?|year|yrs?|yr|y|weeks?|week|wks?|wk|w|days?|day|d|hours?|hour|hrs?|hr|h|minutes?|minute|mins?|min|m|seconds?|second|secs?|sec|s))*\s*$/i;
+const TIME_UNIT_ALT = '(?:milliseconds?|msecs?|msec|ms|seconds?|secs?|sec|s|minutes?|mins?|min|m|hours?|hrs?|hr|h|days?|d|weeks?|wks?|wk|w|years?|yrs?|yr|y)';
 
-export const TIME_UNIT_FORMAT = /([+-]?\d+(?:\.\d+)?)\s*(milliseconds?|msecs?|ms|years?|yrs?|y|weeks?|wks?|w|days?|d|hours?|hrs?|h|minutes?|mins?|min|m|seconds?|secs?|sec|s)/gi;
+export const TIME_STRING_FORMAT = new RegExp(String.raw`^\s*(?:\d+(?:\.\d+)?\s*${TIME_UNIT_ALT}\b)(?:\s+\d+(?:\.\d+)?\s*${TIME_UNIT_ALT}\b)*\s*$`);
+
+export const TIME_UNIT_FORMAT = new RegExp(String.raw`(\d+(?:\.\d+)?)(?:\s*)(${TIME_UNIT_ALT})\b`, 'g');
 
 export const TIME_UNIT_MAP: Map<string, TimeUnit> = new Map([
     ['ms', TimeUnit.Millisecond], ['msec', TimeUnit.Millisecond], ['msecs', TimeUnit.Millisecond], ['millisecond', TimeUnit.Millisecond], ['milliseconds', TimeUnit.Millisecond],
