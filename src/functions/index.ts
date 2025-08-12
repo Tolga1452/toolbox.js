@@ -1,3 +1,4 @@
+export * from './arraySymmetricDiff.js';
 export * from './binomCoef.js';
 export * from './binomialCoefficient.js';
 export * from './binomialDistributionProbability.js';
