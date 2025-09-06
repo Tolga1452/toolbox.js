@@ -43,8 +43,7 @@ jobs:
         run: |
           BASE=$(node -p "require('./package.json').version.replace(/-.*/, '')")
           SHORT=$(git rev-parse --short "$GITHUB_SHA")
-          UNIQUE=$(date +%s)
-          pnpm version --no-git-tag-version "${BASE}-dev.${SHORT}.${UNIQUE}"
+          pnpm version --no-git-tag-version "${BASE}-dev.${SHORT}"
 
       - name: Publish to npm
         env:
