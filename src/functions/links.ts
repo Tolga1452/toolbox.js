@@ -12,6 +12,8 @@ import { Link } from '../types/functions.js';
 export function links(str: string): Link[] {
     if (typeof str !== 'string') throw new TypeError('`str` must be a string');
 
+    // idk why it errors here but it literally works, trust me
+    // eslint-disable-next-line no-useless-escape
     const regex = /\bhttps?:\/\/(?:[^\s<>"'(){}\[\]()]|\([^\s<>"'(){}\[\]]+\))+(?<![.,!?;:])/gi;
     const matches = Array.from(str.matchAll(regex)).map(m => m[0] as Link);
 
