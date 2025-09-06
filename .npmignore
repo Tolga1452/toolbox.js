@@ -5,4 +5,5 @@ scripts
 .gitignore
 eslint.config.js
 jest.*.js
-jest.tsconfig.json
+tsconfig.json
+*.tsconfig.json
