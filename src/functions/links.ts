@@ -1,15 +1,19 @@
+import { Link } from '../types/functions.js';
+
 /**
- * Returns the links of the given string.
- * @param str The string to get the links from.
- * @returns The links found in the string.
+ * Extracts all HTTP/HTTPS links from a given string.
+ * 
+ * @param str - The input string to search for links.
+ * @returns An array of extracted links.
  * 
  * @example
- * links("Check out my website: https://www.example.com"); // ["https://www.example.com"]
+ * links("Check out https://example.com and http://test.com."); // ["https://example.com", "http://test.com"]
  */
-export function links(str: string): string[] {
+export function links(str: string): Link[] {
     if (typeof str !== 'string') throw new TypeError('`str` must be a string');
 
-    const regex = /https?:\/\/[^\s]+[^\s.,;:!?)]/g;
+    const regex = /\bhttps?:\/\/(?:[^\s<>"'(){}[\]]+|\([^\s<>"'(){}[\]]+\))+(?<![.,!?;:])/gi;
+    const matches = Array.from(str.matchAll(regex)).map(m => m[0] as Link);
 
-    return str.match(regex) || [];
+    return matches;
 };
