@@ -12,7 +12,7 @@ import { Link } from '../types/functions.js';
 export function links(str: string): Link[] {
     if (typeof str !== 'string') throw new TypeError('`str` must be a string');
 
-    const regex = /\bhttps?:\/\/(?:[^\s<>"'(){}[\]]+|\([^\s<>"'(){}[\]]+\))+(?<![.,!?;:])/gi;
+    const regex = /\bhttps?:\/\/(?:[^\s<>"'(){}[\]()]+|\([^\s<>"'(){}[\]]+\))+(?<![.,!?;:])/gi;
     const matches = Array.from(str.matchAll(regex)).map(m => m[0] as Link);
 
     return matches;
