@@ -1,37 +1,145 @@
-import { links } from '../';
+import { links } from '../src/functions';
 
 describe('links', () => {
-    it('should return the links of the given string', () => {
-        const str = 'Check out my website: https://www.example.com';
-        const expected = ['https://www.example.com'];
+    describe('type validation', () => {
+        test('should throw TypeError for non-string input', () => {
+            expect(() => links(123 as any)).toThrow(TypeError);
+            expect(() => links(null as any)).toThrow(TypeError);
+            expect(() => links(undefined as any)).toThrow(TypeError);
+            expect(() => links({} as any)).toThrow(TypeError);
+            expect(() => links([] as any)).toThrow(TypeError);
+        });
 
-        expect(links(str)).toEqual(expected);
+        test('should throw TypeError with correct message', () => {
+            expect(() => links(123 as any)).toThrow('`str` must be a string');
+        });
     });
 
-    it('should return an empty array if given string has no links', () => {
-        const str = 'This is a test string with no links';
+    describe('basic functionality', () => {
+        test('should extract single HTTP link', () => {
+            const result = links('Visit http://example.com for more info');
+            expect(result).toEqual(['http://example.com']);
+        });
 
-        expect(links(str)).toEqual([]);
+        test('should extract single HTTPS link', () => {
+            const result = links('Check out my website: https://www.example.com');
+            expect(result).toEqual(['https://www.example.com']);
+        });
+
+        test('should extract multiple links', () => {
+            const result = links('Visit https://google.com and http://github.com');
+            expect(result).toEqual(['https://google.com', 'http://github.com']);
+        });
+
+        test('should return empty array for string with no links', () => {
+            const result = links('This is just plain text with no links');
+            expect(result).toEqual([]);
+        });
+
+        test('should return empty array for empty string', () => {
+            const result = links('');
+            expect(result).toEqual([]);
+        });
     });
 
-    it('should return all links in the string', () => {
-        const str = 'Here are three links: https://www.example.com https://www.google.com https://www.github.com';
-        const expected = ['https://www.example.com', 'https://www.google.com', 'https://www.github.com'];
+    describe('punctuation handling', () => {
+        test('should exclude trailing punctuation', () => {
+            expect(links('Visit https://example.com.')).toEqual(['https://example.com']);
+            expect(links('Visit https://example.com,')).toEqual(['https://example.com']);
+            expect(links('Visit https://example.com;')).toEqual(['https://example.com']);
+            expect(links('Visit https://example.com:')).toEqual(['https://example.com']);
+            expect(links('Visit https://example.com!')).toEqual(['https://example.com']);
+            expect(links('Visit https://example.com?')).toEqual(['https://example.com']);
+            expect(links('Visit https://example.com)')).toEqual(['https://example.com']);
+            expect(links('Visit "https://example.com"')).toEqual(['https://example.com']);
+            expect(links('Visit \'https://example.com\'')).toEqual(['https://example.com']);
+        });
 
-        expect(links(str)).toEqual(expected);
+        test('should handle links in parentheses', () => {
+            const result = links('Check this out (https://example.com)');
+            expect(result).toEqual(['https://example.com']);
+        });
+
+        test('should handle nested parentheses without including trailing parenthesis', () => {
+            const result = links('See this (really cool (resource at https://example.com/path)) today.');
+            expect(result).toEqual(['https://example.com/path']);
+        });
+
+        test('should not include closing square bracket or quote', () => {
+            expect(links('Markdown style [link](https://example.com).')).toEqual(['https://example.com']);
+            expect(links('Quoted "https://example.com" is here.')).toEqual(['https://example.com']);
+            expect(links("Quoted 'https://example.com' is here.")).toEqual(['https://example.com']);
+        });
     });
 
-    it('should handle multiple links in the same sentence', () => {
-        const str = 'Check out my website: https://www.example.com, and my Github: https://www.github.com';
-        const expected = ['https://www.example.com', 'https://www.github.com'];
+    describe('whitespace handling', () => {
+        test('should handle links with surrounding whitespace', () => {
+            const result = links('   https://example.com   ');
+            expect(result).toEqual(['https://example.com']);
+        });
 
-        expect(links(str)).toEqual(expected);
+        test('should handle links separated by whitespace', () => {
+            const result = links('https://google.com\t\nhttps://github.com');
+            expect(result).toEqual(['https://google.com', 'https://github.com']);
+        });
     });
 
-    it('should work with URLs that have query parameters', () => {
-        const str = 'Here is a link with query parameters: https://www.example.com/?id=123&name=John';
-        const expected = ['https://www.example.com/?id=123&name=John'];
+    describe('complex URLs', () => {
+        test('should handle URLs with paths', () => {
+            const result = links('Visit https://example.com/path/to/page');
+            expect(result).toEqual(['https://example.com/path/to/page']);
+        });
 
-        expect(links(str)).toEqual(expected);
+        test('should handle URLs with query parameters', () => {
+            const result = links('Search https://google.com/search?q=test');
+            expect(result).toEqual(['https://google.com/search?q=test']);
+        });
+
+        test('should handle URLs with fragments', () => {
+            const result = links('Go to https://example.com/page#section');
+            expect(result).toEqual(['https://example.com/page#section']);
+        });
+
+        test('should handle URLs with ports', () => {
+            const result = links('Local server http://localhost:3000');
+            expect(result).toEqual(['http://localhost:3000']);
+        });
+
+        test('should keep query parameter punctuation inside URL', () => {
+            const result = links('Search https://example.com/search?query=hello,world&lang=en');
+            expect(result).toEqual(['https://example.com/search?query=hello,world&lang=en']);
+        });
+    });
+
+    describe('edge cases', () => {
+        test('should handle malformed URLs gracefully', () => {
+            const result = links('This has http:// incomplete and https:// also incomplete');
+            expect(result).toEqual([]);
+        });
+
+        test('should handle mixed content', () => {
+            const text = 'Check out https://github.com for code, https://google.com for search, and visit http://stackoverflow.com for help!';
+            const result = links(text);
+            expect(result).toEqual([
+                'https://github.com',
+                'https://google.com',
+                'http://stackoverflow.com'
+            ]);
+        });
+
+        test('should handle string with only whitespace', () => {
+            const result = links('   \t\n   ');
+            expect(result).toEqual([]);
+        });
+
+        test('should not capture URL followed immediately by punctuation chain', () => {
+            const result = links('Edge https://example.com!!! wow');
+            expect(result).toEqual(['https://example.com']);
+        });
+
+        test('should not include trailing period inside parentheses', () => {
+            const result = links('See (https://example.com).');
+            expect(result).toEqual(['https://example.com']);
+        });
     });
 });

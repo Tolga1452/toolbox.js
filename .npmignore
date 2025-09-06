@@ -1,0 +1,9 @@
+src
+__tests__
+.github
+scripts
+.gitignore
+eslint.config.js
+jest.*.js
+tsconfig.json
+*.tsconfig.json
