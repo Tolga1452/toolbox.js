@@ -51,11 +51,24 @@ describe('links', () => {
             expect(links('Visit https://example.com!')).toEqual(['https://example.com']);
             expect(links('Visit https://example.com?')).toEqual(['https://example.com']);
             expect(links('Visit https://example.com)')).toEqual(['https://example.com']);
+            expect(links('Visit "https://example.com"')).toEqual(['https://example.com']);
+            expect(links('Visit \'https://example.com\'')).toEqual(['https://example.com']);
         });
 
         test('should handle links in parentheses', () => {
             const result = links('Check this out (https://example.com)');
             expect(result).toEqual(['https://example.com']);
+        });
+
+        test('should handle nested parentheses without including trailing parenthesis', () => {
+            const result = links('See this (really cool (resource at https://example.com/path)) today.');
+            expect(result).toEqual(['https://example.com/path']);
+        });
+
+        test('should not include closing square bracket or quote', () => {
+            expect(links('Markdown style [link](https://example.com).')).toEqual(['https://example.com']);
+            expect(links('Quoted "https://example.com" is here.')).toEqual(['https://example.com']);
+            expect(links("Quoted 'https://example.com' is here.")).toEqual(['https://example.com']);
         });
     });
 
@@ -91,6 +104,11 @@ describe('links', () => {
             const result = links('Local server http://localhost:3000');
             expect(result).toEqual(['http://localhost:3000']);
         });
+
+        test('should keep query parameter punctuation inside URL', () => {
+            const result = links('Search https://example.com/search?query=hello,world&lang=en');
+            expect(result).toEqual(['https://example.com/search?query=hello,world&lang=en']);
+        });
     });
 
     describe('edge cases', () => {
@@ -112,6 +130,16 @@ describe('links', () => {
         test('should handle string with only whitespace', () => {
             const result = links('   \t\n   ');
             expect(result).toEqual([]);
+        });
+
+        test('should not capture URL followed immediately by punctuation chain', () => {
+            const result = links('Edge https://example.com!!! wow');
+            expect(result).toEqual(['https://example.com']);
+        });
+
+        test('should not include trailing period inside parentheses', () => {
+            const result = links('See (https://example.com).');
+            expect(result).toEqual(['https://example.com']);
         });
     });
 });
